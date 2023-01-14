@@ -41,8 +41,6 @@ flyAway = pygame.USEREVENT + 1
 
 # initialize some things
 pygame.init()  # initialize pygame
-pygame.joystick.init()  # initialize the joysticks
-joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
 
 pygame.mixer.music.load(os.path.join(sound_folder, "gameloop.mp3"))
 pygame.mixer.music.play(-1)
@@ -52,8 +50,6 @@ pygame.mixer.music.set_volume(0.35)
 screen = pygame.display.set_mode((gameSizeWidth, gameSizeHeight))
 pygame.display.set_caption("Alien Invasion")  # CHANGE THIS WHEN A PROPER NAME IS DECIDED UPON
 
-# set up the controllers
-p1 = controller.Controller(0)  # Pass in index value of 0, representing controller 1
 
 # Set up the sprite groups
 crosshair_sprites = pygame.sprite.Group()
@@ -82,7 +78,8 @@ def Spawn(lowerLim, upperLim):
 # set up the clock
 CLOCK = pygame.time.Clock()
 
-buttonGroup = []
+
+keys = pygame.key.get_pressed()
 
 while run:
     fade = 0
