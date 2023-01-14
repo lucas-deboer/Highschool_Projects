@@ -46,7 +46,7 @@ def checkWin(squares):
             return squares[x * 3]  # check the rows
         if squares[x] == squares[x + 3] == squares[x + 6] and squares[x] != " ":
             return squares[x]  # check the columns
-    if ((squares[0] == squares[4] == squares[8]) or (squares[2] == squares[4] == squares[6])) and squares[4] != " ":
+    if ((squares[0] == squares[4] == squares[8]) or (squares[2] == squares[4] == squares[6])) and squares[4] != " ": # diagonals
         return squares[4]
 
 
@@ -70,7 +70,7 @@ def checkNext(squares, token, switch):
     for x in range(9):
         if squares[x] == " ":
             squares[x] = token
-            if checkWin(squares) is None:
+            if checkWin(squares) is not None:
                 squares[x] = " "
                 return x
             else:
@@ -84,16 +84,23 @@ def computerToken(token, squares, difficulty, turnNum):
     elif difficulty == "2":  # medium difficulty
         winNext = checkNext(squares, token, False)  # calculate once to save time
         blockNext = checkNext(squares, token, True)
+
         if winNext is not None:  # first check if the computer can win
+            print("here") 
             squares[winNext] = token
             print("The computer placed a token on space", winNext + 1)
         elif blockNext is not None:  # then block the opponent
             squares[blockNext] = token
             print("The computer placed a token on space", blockNext + 1)
+        else:
+            randomizer(range(0,9))
+        '''
         elif " " in squares[::2]:
             randomizer((0, 2, 4, 6, 8))
         else:
             randomizer((1, 3, 5, 7))
+        '''
+
     else:  # impossible difficulty
         winNext = checkNext(squares, token, False)  # calculate once to save time
         blockNext = checkNext(squares, token, True)
@@ -272,3 +279,4 @@ if wins == 0 or wins > 1:
     print("Congratulations, you won", wins, "games!")
 else:
     print("You only won one game.")
+
