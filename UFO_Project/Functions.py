@@ -8,6 +8,10 @@ May 2, 2022
 # import statements
 import pygame
 import assets
+import os
+
+game_folder = os.path.dirname(__file__)  # renaming the file where the main is
+highscore = os.path.join(game_folder, "highscores.txt")
 
 # defince some colours
 WHITE = (255, 255, 255)
@@ -93,7 +97,7 @@ def scoreDisplay (screen, score, font):
 # Post: the highscores list is modified
 def isHighscore (name, score):
     # add the new score to list
-    scores = open('highscores.txt', 'a')
+    scores = open(highscore, 'a')
     scores.writelines(name + ' ' + str(score) + '\n')
     scores.close()
 
@@ -102,7 +106,7 @@ def isHighscore (name, score):
     H.sort(key=lambda x: x[slice(4, 9)], reverse=True)
 
     # add only the top ten scores back to the document
-    scores = open('highscores.txt', 'w')
+    scores = open(highscore, 'w')
     for x in range(len(H)):
         if x == 10:
             break
@@ -114,7 +118,7 @@ def isHighscore (name, score):
 # Pre: none
 # Post: return the list of highscores
 def getHighscores():
-    highscores = open("highscores.txt")
+    highscores = open(highscore)
     lines = highscores.readlines()
     highscores.close()
 
