@@ -38,9 +38,9 @@ class Crosshair(pygame.sprite.Sprite):
         self.rect.x += movement[0] * self.speed
         self.rect.y += movement[1] * self.speed
 
-    def update(self, width, height, controllers, bool, goofy):
+    def update(self, width, height, bool, goofy, movementTuple, prev, current, button):
         self.shooting = False  # always have shooting to false
-        self.move(controllers.get_axis())
+        self.move(movementTuple)
         if self.rect.left <= 0:
             self.rect.left = 0
         if self.rect.right >= width:
@@ -49,8 +49,9 @@ class Crosshair(pygame.sprite.Sprite):
             self.rect.top = 0
         if self.rect.bottom >= height:
             self.rect.bottom = height
+        #print(f"THe prev: {prev}, the current: {current}")
 
-        if controllers.is_button_just_pressed(0):
+        if Functions.isButtonJustPressed(prev, current, button):
             if bool is False:
                 if goofy: assets.clickSFX.play()
                 else: assets.menuSFX.play()
@@ -146,7 +147,7 @@ class Button ():
         screen.blit(self.text,(self.Rect.centerx - self.text.get_width()/2, self.y - self.height/2))
         Functions.drawBorder(screen, self.Rect, 3, DARK_RED)
 
-    def update (self, cursor,screen):
+    def update (self, cursor, screen):
         # enlarge the button when cursor is above it
         if self.Rect.colliderect(cursor):
             self.Rect = pygame.Rect(0, 0, self.width + 20, self.height + 20)

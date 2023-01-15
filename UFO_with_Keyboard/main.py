@@ -6,7 +6,6 @@ May 2, 2022
 
 # import statements
 import pygame
-import controller
 import assets
 from Objects import Crosshair, UFO, Button
 import Functions
@@ -32,6 +31,7 @@ highscore = False
 name = ''
 goofy = False
 colourChoice = RED
+currentButtons = lastButtons = []
 
 background = assets.backgroundImg1
 background_rect = background.get_rect()
@@ -105,7 +105,10 @@ while run:
             if event.type == pygame.QUIT:  # If user clicked close.
                 start = main = end = run = False  # Flag that we are done, so we exit this loop.
 
-        if p1.is_button_pressed(0) and fade >= 1:
+        lastButtons = currentButtons
+        currentButtons = pygame.key.get_pressed()
+
+        if Functions.isButtonJustPressed(lastButtons,currentButtons, pygame.K_SPACE) and fade >= 1:
             # main menu
             if button1.Rect.colliderect(p1Crosshair):
                 main = True
@@ -164,9 +167,7 @@ while run:
             for buttons in buttonGroup:
                 buttons.update(p1Crosshair, screen)
 
-        p1.update()  # to break out of the screen
-
-        if p1.is_button_pressed(0) and display == 2:
+        if Functions.isButtonPressed(pygame.K_SPACE) and display == 2:
             # background
             if back1.Rect.colliderect(p1Crosshair):
                 background = assets.backgroundImg1
@@ -190,7 +191,7 @@ while run:
             if colour3.Rect.colliderect(p1Crosshair):
                 colourChoice = BLUE
 
-        p1Crosshair.update(gameSizeWidth, gameSizeHeight, p1, False, goofy)  # call the update function of the class
+        p1Crosshair.update(gameSizeWidth, gameSizeHeight, False, goofy, Functions.movementTuple(), lastButtons, currentButtons, pygame.K_SPACE) 
         crosshair_sprites.draw(screen)
         pygame.display.update()
 
@@ -273,7 +274,7 @@ while run:
             else:
                 string = "GAME OVER"
                 Functions.textDisplay(screen, string, fonts(30), screen.get_width() / 2, screen.get_height() / 2)
-                Functions.textDisplay(screen, 'Press Right Button.', fonts(20), screen.get_width() / 2,
+                Functions.textDisplay(screen, 'Press ESC.', fonts(20), screen.get_width() / 2,
                                       screen.get_height() * 5 / 8)
                 if temp:
                     pygame.mixer.Sound.stop(assets.shotSFX)
@@ -286,16 +287,18 @@ while run:
                         assets.gameOverSFX.play()
                     temp = False
 
-        if string == "GAME OVER" and p1.is_button_pressed(1):
+        if string == "GAME OVER" and Functions.isButtonPressed(pygame.K_ESCAPE):
             main = False
 
         # Update the controllers
-        p1.update()
+        lastButtons = currentButtons
+        currentButtons = pygame.key.get_pressed()
+
 
         # update crosshair and ufos
         UFO_sprites.update(gameSizeWidth, gameSizeHeight - 100, screen, roundOver, roundNumber, p1Crosshair.bullets)
         if string != "GAME OVER":
-            p1Crosshair.update(gameSizeWidth, gameSizeHeight, p1, True, goofy)  # call the update function of the class
+            p1Crosshair.update(gameSizeWidth, gameSizeHeight, True, goofy, Functions.movementTuple(),lastButtons, currentButtons,pygame.K_SPACE)  
 
         UFO_sprites.draw(screen)
         crosshair_sprites.draw(screen)
@@ -320,41 +323,43 @@ while run:
             if event.type == pygame.QUIT:
                 highscore = end = run = False
 
-        p1.update()
+        lastButtons = currentButtons
+        currentButtons = pygame.key.get_pressed()
+        
         # see if the crosshair is over another button to change the letters
         if l1.Rect.colliderect(p1Crosshair):
-            if p1.is_button_just_pressed(0):
+            if Functions.isButtonJustPressed(lastButtons, currentButtons, pygame.K_UP):
                 l1c = l1c + 1
                 if (l1c == 91):
                     l1c = 65
-            if p1.is_button_just_pressed(1):
+            if Functions.isButtonJustPressed(lastButtons, currentButtons, pygame.K_DOWN):
                 l1c = l1c - 1
                 if (l1c == 64):
                     l1c = 90
 
         if l2.Rect.colliderect(p1Crosshair):
-            if p1.is_button_just_pressed(0):
+            if Functions.isButtonJustPressed(lastButtons, currentButtons, pygame.K_UP):
                 l2c = l2c + 1
                 if (l2c == 91):
                     l2c = 65
-            if p1.is_button_just_pressed(1):
+            if Functions.isButtonJustPressed(lastButtons, currentButtons, pygame.K_DOWN):
                 l2c = l2c - 1
                 if (l2c == 64):
                     l2c = 90
 
         if l3.Rect.colliderect(p1Crosshair):
-            if p1.is_button_just_pressed(0):
+            if Functions.isButtonJustPressed(lastButtons, currentButtons, pygame.K_UP):
                 l3c = l3c + 1
                 if l3c == 91:
                     l3c = 65
-            if p1.is_button_just_pressed(1):
+            if Functions.isButtonJustPressed(lastButtons, currentButtons, pygame.K_DOWN):
                 l3c = l3c - 1
                 if (l3c == 64):
                     l3c = 90
 
         # save name - exit loop and connect letters to name variable
         if l4.Rect.colliderect(p1Crosshair):
-            if p1.is_button_just_pressed(0):
+            if Functions.isButtonJustPressed(lastButtons, currentButtons, pygame.K_SPACE):
                 name = chr(l1c) + chr(l2c) + chr(l3c)
                 if name not in assets.badWords:
                     if score < 1000:
@@ -367,7 +372,7 @@ while run:
         if name in assets.badWords:
             Functions.textDisplay(screen, 'Username not allowed.', fonts(40), gameSizeWidth / 2, 500)
 
-        p1Crosshair.update(gameSizeWidth, gameSizeHeight, p1, False, goofy)  # call the update function of the class
+        p1Crosshair.update(gameSizeWidth, gameSizeHeight, False, goofy, Functions.movementTuple(), lastButtons, currentButtons,pygame.K_SPACE)  
         crosshair_sprites.draw(screen)
         pygame.display.update()
 
@@ -385,7 +390,7 @@ while run:
         replay = Button(screen, 'Play Again', fonts(30), screen.get_width() / 4, 650)
         change = Button(screen, 'Settings', fonts(30), 3 * screen.get_width() / 4, 650)
 
-        if p1.is_button_pressed(0):
+        if Functions.isButtonPressed(pygame.K_SPACE):
             # main menu
             if replay.Rect.colliderect(p1Crosshair):
                 main = True
@@ -394,11 +399,13 @@ while run:
                 start = True
                 break
 
-        p1.update()
+        lastButtons = currentButtons
+        currentButtons = pygame.key.get_pressed()
+        
         replay.update(p1Crosshair, screen)
         change.update(p1Crosshair, screen)
 
-        p1Crosshair.update(gameSizeWidth, gameSizeHeight, p1, False, goofy)  # call the update function of the class
+        p1Crosshair.update(gameSizeWidth, gameSizeHeight, False, goofy, Functions.movementTuple(), lastButtons, currentButtons,pygame.K_SPACE)  
         crosshair_sprites.draw(screen)
         pygame.display.update()
 

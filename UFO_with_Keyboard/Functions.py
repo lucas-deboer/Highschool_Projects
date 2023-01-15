@@ -13,7 +13,7 @@ import os
 game_folder = os.path.dirname(__file__)  # renaming the file where the main is
 highscore = os.path.join(game_folder, "highscores.txt")
 
-# defince some colours
+# define some colours
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -151,3 +151,39 @@ def displayHighscores(screen, font, x, y):
         # display the name and score on screen
         screen.blit(nameText, nameTextRect)
         screen.blit(scoreText, scoreTextRect)
+
+# Create a movement tuple
+# Pre: nothing
+# Post: returns a 2 value tuple representing movement based on key inputs
+def movementTuple():
+        keys = pygame.key.get_pressed()
+        xMovement = 0
+        yMovement = 0
+        if keys[pygame.K_a]:
+            xMovement = -1 
+        elif keys[pygame.K_d]:
+            xMovement = 1 
+        if keys[pygame.K_w]:
+            yMovement = -1 
+        elif keys[pygame.K_s]:
+            yMovement = 1 
+        return (xMovement, yMovement)
+
+# Records the keys pressed
+# Pre: nothing
+# Post: returns a boolean whether or not a key is pressed
+def isButtonPressed(button):
+    flag = False
+    keys = pygame.key.get_pressed()
+    if keys[button]:
+        flag = True
+    return flag
+    
+# Determines if a button is pressed for an instant
+# Pre: list of previously and currently activated buttons
+# Post: returns the updated input lists
+def isButtonJustPressed(prev, current, button):
+    flag = False
+    if current[button] and not prev[button]:
+        flag = True 
+    return flag
